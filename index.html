@@ -1,0 +1,179 @@
+<html>
+
+<head>
+    <style>
+        .wrapper {
+            width: 1024px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .wrapper .align-center {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .hidden{
+            display: none;
+        }
+
+        .wrapper .align-center h1 {
+            text-align: center;
+            color: #fff;
+            font-size: 72px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .wrapper .align-center img {
+            margin: 25px 0;
+            width: 100px;
+            cursor: pointer;
+        }
+
+        .wrapper .align-center img.family-member {
+            width: 180px;
+            margin: 0 20px;
+        }
+
+        .bounce {
+            animation: zoominoutsinglefeatured 1s infinite ;
+        }   
+
+        video{
+            width: 100%;
+        }  
+
+        @keyframes zoominoutsinglefeatured {
+            0% {
+                transform: scale(1, 1);
+            }
+            50% {
+                transform: scale(1.2, 1.2);
+            }
+            100% {
+                transform: scale(1, 1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div id="start">
+            <img src="assets/bg.jpg" />
+            <div class="align-center" id="intro">
+                <h1>Hansel and Gretel</h1>
+                <img src="assets/play.png" id="play-story" />
+            </div>
+            <div class="align-center hidden" id="family">
+                <img src="assets/hansel.jpg" class="family-member hansel" />
+                <img src="assets/gretel.jpg" class="family-member gretel" style="display: none;" />
+                <img src="assets/father.jpg" class="family-member father" style="display: none;" />
+                <img src="assets/mother.jpg" class="family-member mother" style="display: none;" />
+            </div>
+            <div class="align-center hidden" id="story">
+                <video id="story-player" controls>
+                    <source src="assets/story.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="align-center hidden" id="interaction-house">
+                Interaction house page
+                <img src="assets/bg.jpg" width="300" id="house"/>
+            </div>
+        </div>
+    </div>
+    <script src="assets/jquery.js"></script>
+    <script>
+        var storyPlayer = document.getElementById('story-player');
+        $(document).ready(function () {
+
+            $('#play-story').click(function () {
+                storyPlayer.currentTime = 10;
+                storyPlayer.play();
+
+                $(this).hide();
+
+                setTimeout(showHanselAndGretel, 6500);
+                setTimeout(showFatherAndMother, 9500);
+                setTimeout(initFamilySelection, 17500);
+
+            });
+
+            function showHanselAndGretel() {
+                $('#family').show();
+
+                setTimeout(function () {
+                    $('#family .gretel').show();
+                }, 1000);
+            }
+
+            function showFatherAndMother() {
+                $('#family .father').show();
+                setTimeout(function () {
+                    $('#family .mother').show();
+                }, 1000);
+            }
+
+            function initFamilySelection() {
+                pause();
+
+                $('.family-member').addClass('bounce');
+
+                $('.family-member.bounce').on('click', function(){
+                    $(this).removeClass('bounce');
+
+                    var leftMembers = $('.family-member.bounce').length;
+                    if(leftMembers === 0){
+                        // continue story
+                        initStory1();
+                    }
+                });
+            }
+
+            function initStory1(){
+                $('#family').hide();
+                $('#story').show();
+
+                storyPlayer.currentTime = 210;
+                storyPlayer.play();
+
+                // set timeout for interactions page with cookie house
+                setTimeout(initHouseInteraction, 1000);
+            }
+
+            function initHouseInteraction(){
+                $('#story').hide();
+                $('#interaction-house').show();
+
+                pause();
+
+                $('#house').addClass('bounce').on('click', function(){
+                    $(this).removeClass('bounce');
+
+                    initStory2();
+                });
+            }
+
+            function initStory2(){
+                $('#interaction-house').hide();
+                $('#story').show();
+
+                storyPlayer.currentTime = 500;
+                storyPlayer.play();
+
+                // TODO set timeouts to change image background
+            }
+
+            function pause() {
+                storyPlayer.pause();
+            }
+
+        });
+    </script>
+</body>
+
+</html>
