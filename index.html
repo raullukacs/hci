@@ -39,6 +39,10 @@
             margin: 0 20px;
         }
 
+        .wrapper .align-center img.family-member.selected{
+            border: 1px solid red;
+        }
+
         .bounce {
             animation: zoominoutsinglefeatured 1s infinite ;
         }   
@@ -70,10 +74,10 @@
                 <img src="assets/play.png" id="play-story" />
             </div>
             <div class="align-center hidden" id="family">
-                <img src="assets/hansel.jpg" class="family-member hansel" />
-                <img src="assets/gretel.jpg" class="family-member gretel" style="display: none;" />
-                <img src="assets/father.jpg" class="family-member father" style="display: none;" />
-                <img src="assets/mother.jpg" class="family-member mother" style="display: none;" />
+                <img src="assets/hansel.jpg" class="family-member hansel" data-type="hansel"/>
+                <img src="assets/gretel.jpg" class="family-member gretel" data-type="gretel" style="display: none;" />
+                <img src="assets/father.jpg" class="family-member father" data-type="father" style="display: none;" />
+                <img src="assets/mother.jpg" class="family-member mother" data-type="mother" style="display: none;" />
             </div>
             <div class="align-center hidden" id="story">
                 <video id="story-player" controls>
@@ -124,12 +128,42 @@
                 $('.family-member').addClass('bounce');
 
                 $('.family-member.bounce').on('click', function(){
-                    $(this).removeClass('bounce');
+                    $(this).removeClass('bounce').addClass('selected');
+
+                    var clickedImageType = $(this).data('type');
+                    var timeout = 0;
+                    pause();
+                    switch(clickedImageType)
+                    {
+                        case 'hansel':
+                            storyPlayer.currentTime = 16.3;
+                            timeout = 600;
+                            break;
+                        
+                        case 'gretel':
+                            storyPlayer.currentTime = 17.2;
+                            timeout = 700;
+                        break;
+                            
+                        case 'father':
+                            storyPlayer.currentTime = 19;
+                            timeout = 900;
+                            break;
+                            
+                        case 'mother':
+                            storyPlayer.currentTime = 20.2;
+                            timeout = 1200;
+                            break;
+                    }
+
+                    // play name and then stop
+                    storyPlayer.play();
+                    setTimeout(pause, timeout);
 
                     var leftMembers = $('.family-member.bounce').length;
                     if(leftMembers === 0){
                         // continue story
-                        initStory1();
+                        setTimeout(initStory1, 1500);
                     }
                 });
             }
@@ -142,7 +176,7 @@
                 storyPlayer.play();
 
                 // set timeout for interactions page with cookie house
-                setTimeout(initHouseInteraction, 1000);
+                setTimeout(initHouseInteraction, 5000);
             }
 
             function initHouseInteraction(){
