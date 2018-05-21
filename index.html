@@ -62,13 +62,27 @@
                 transform: scale(1, 1);
             }
         }
+
+        #house{
+            width: auto;
+            position: absolute;
+            top: 100px;
+            right: 185px;
+        }
+
+        #interaction-witch{
+            position: absolute;
+            top: 75px;
+            right: 165px;
+        }
     </style>
 </head>
 
 <body>
     <div class="wrapper">
         <div id="start">
-            <img src="assets/bg.jpg" />
+            <img src="assets/bg.jpg" id="main-bg"/>
+            <img src="assets/witch-bg.jpg" id="witch-bg" class="hidden" style="width:100%;"/>
             <div class="align-center" id="intro">
                 <h1>Hansel and Gretel</h1>
                 <img src="assets/play.png" id="play-story" />
@@ -84,15 +98,24 @@
                     <source src="assets/story.mp4" type="video/mp4">
                 </video>
             </div>
-            <div class="align-center hidden" id="interaction-house">
-                Interaction house page
-                <img src="assets/bg.jpg" width="300" id="house"/>
+            <div class="align-center hidden" id="yay">
+                <video id="yay-player" controls>
+                    <source src="assets/yay.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="hidden" id="interaction-house">
+                <img src="assets/house.png" id="house"/>
+            </div>
+            <div class="hidden" id="interaction-witch">
+                <img src="assets/witch.png" id="witch" style="width:320px;"/>
             </div>
         </div>
     </div>
     <script src="assets/jquery.js"></script>
     <script>
         var storyPlayer = document.getElementById('story-player');
+        var yayPlayer = document.getElementById('yay-player');
+
         $(document).ready(function () {
 
             $('#play-story').click(function () {
@@ -104,7 +127,6 @@
                 setTimeout(showHanselAndGretel, 6500);
                 setTimeout(showFatherAndMother, 9500);
                 setTimeout(initFamilySelection, 17500);
-
             });
 
             function showHanselAndGretel() {
@@ -172,15 +194,16 @@
                 $('#family').hide();
                 $('#story').show();
 
-                storyPlayer.currentTime = 210;
+                storyPlayer.currentTime = 168;
                 storyPlayer.play();
 
                 // set timeout for interactions page with cookie house
-                setTimeout(initHouseInteraction, 5000);
+                setTimeout(initHouseInteraction, 132 * 1000);
             }
 
             function initHouseInteraction(){
                 $('#story').hide();
+                $('#intro').hide();
                 $('#interaction-house').show();
 
                 pause();
@@ -188,7 +211,23 @@
                 $('#house').addClass('bounce').on('click', function(){
                     $(this).removeClass('bounce');
 
-                    initStory2();
+                    // play bravo sound
+                    storyPlayer.currentTime = 275.8;
+                    storyPlayer.play();
+
+                    setTimeout(function(){
+                        pause();
+
+                        // do yay sound         
+                        yayPlayer.currentTime = 0.4;
+                        yayPlayer.play();
+
+                        setTimeout(function(){
+                            pauseYay();
+                            setTimeout(initStory2, 1000);
+                        }, 2000);
+                
+                    }, 600);
                 });
             }
 
@@ -196,14 +235,84 @@
                 $('#interaction-house').hide();
                 $('#story').show();
 
-                storyPlayer.currentTime = 500;
+                storyPlayer.currentTime = 302;
                 storyPlayer.play();
 
-                // TODO set timeouts to change image background
+                setTimeout(function(){
+                    pause();
+
+                    storyPlayer.currentTime = 378;
+                    storyPlayer.play();
+
+                    setTimeout(function(){
+                        pause();
+                        initWitchInteraction();
+                    }, 64 * 1000);
+
+                }, 38 * 1000);
+            }
+
+            function initWitchInteraction(){
+                $('#story').hide();
+                $('#witch-bg').show();
+                $('#main-bg').hide();
+                $('#intro').hide();
+                $('#interaction-witch').show();
+
+                $('#witch').addClass('bounce').on('click', function(){
+                    $(this).remove();
+                
+                    storyPlayer.currentTime = 447.9;
+                    storyPlayer.play();
+
+                    // witch yells
+                    $('#story').show();
+                    $('#witch-bg').hide();
+                    $('#main-bg').show();
+
+                    setTimeout(function(){
+                        pause();
+
+                        yayPlayer.currentTime = 0.4;
+                        yayPlayer.play();
+
+                        // yay sounds
+                        setTimeout(function(){
+                            pauseYay();
+                            initStory3();
+                        }, 1500);
+
+                    }, 1200);
+                });
+            }
+
+            function initStory3(){
+                storyPlayer.play();
+
+                setTimeout(function(){
+                    pause();
+
+                    // end of story
+                    storyPlayer.currentTime = 470;
+                    storyPlayer.play();
+
+                    setTimeout(function(){
+                        pause();
+
+                        setTimeout(function(){
+                            location.reload();
+                        }, 2000);
+
+                    }, 65 * 1000);
+                }, 9000);
             }
 
             function pause() {
                 storyPlayer.pause();
+            }
+
+            function pauseYay(){
+                yayPlayer.pause();
             }
 
         });
