@@ -2,6 +2,10 @@
 
 <head>
     <style>
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
         .wrapper {
             width: 1024px;
             margin: 0 auto;
@@ -68,12 +72,86 @@
             position: absolute;
             top: 100px;
             right: 185px;
+            cursor: pointer;
+            border: 3px dashed #fff;
+        }
+
+        #tree{
+            position: absolute;
+            left: -5px;
+            top: 5px;
+            cursor: pointer;
+            border: 3px dashed #fff;
+        }
+
+        #cookie{
+            position: absolute;
+            bottom: 70px;
+            right: 250px;
+            cursor: pointer;
+            border: 3px dashed #fff;
+        }
+
+        #house.bounce{
+            border: none;
+        }
+
+        #tree.bounce{
+            border: none;
+        }
+
+        #cookie.bounce{
+            border: none;
+        }
+
+        .interaction{
+            font-weight: 600;
+        }
+
+        .interaction p{
+            display: none;
+            text-align: center;
+            color: #fff;
+            text-transform: uppercase;
+            font-size: 22px;
+            position: absolute;
+            width: 200px;
+            left: 50%;
+            text-align: center;
+            transform: translateX(-50%);
+        }
+
+        .interaction.selected p{
+            display: block;
         }
 
         #interaction-witch{
             position: absolute;
             top: 75px;
             right: 165px;
+        }
+
+        #exit{
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            z-index: 99;
+        }
+        button{
+            border: 1px solid #fff;
+            background: #94dc0c;
+            font-size: 22px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 700;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        #intro button{
+            width: 250px;
+            font-size: 25px;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -85,14 +163,30 @@
             <img src="assets/witch-bg.jpg" id="witch-bg" class="hidden" style="width:100%;"/>
             <div class="align-center" id="intro">
                 <h1>Hansel and Gretel</h1>
-                <img src="assets/play.png" id="play-story" />
+                <button id="play-story">Play story</button><br/>
+                <button id="game1">Family Game</button><br/>
+                <button id="game2">"This" Game</button><br/>
             </div>
-            <div class="align-center hidden" id="family">
+            <div class="align-center hidden" id="game1-wrapper">
                 <img src="assets/hansel.jpg" class="family-member hansel" data-type="hansel"/>
-                <img src="assets/gretel.jpg" class="family-member gretel" data-type="gretel" style="display: none;" />
-                <img src="assets/father.jpg" class="family-member father" data-type="father" style="display: none;" />
-                <img src="assets/mother.jpg" class="family-member mother" data-type="mother" style="display: none;" />
+                <img src="assets/gretel.jpg" class="family-member gretel" data-type="gretel"/>
+                <img src="assets/father.jpg" class="family-member father" data-type="father" />
+                <img src="assets/mother.jpg" class="family-member mother" data-type="mother" />
             </div>
+            <div class="hidden" id="interaction-house">
+                    <div id="house" class="interaction bounce">
+                        <img src="assets/house.png" />
+                        <p>This is a house</p>
+                    </div>
+                    <div id="tree" class="interaction bounce" >
+                        <img src="assets/tree.png"/>
+                        <p>This is a tree</p>
+                    </div>
+                    <div id="cookie" class="interaction bounce" >
+                        <img src="assets/cookie.png" />
+                        <p>This is a cookie</p>
+                    </div>
+                </div>
             <div class="align-center hidden" id="story">
                 <video id="story-player" controls>
                     <source src="assets/story.mp4" type="video/mp4">
@@ -102,13 +196,33 @@
                 <video id="yay-player" controls>
                     <source src="assets/yay.mp4" type="video/mp4">
                 </video>
+                <video id="house-player" controls>
+                    <source src="assets/house.mp3" type="video/mp4">
+                </video>
+                <video id="cookie-player" controls>
+                    <source src="assets/cookie.mp3" type="video/mp4">
+                </video>
+                <video id="tree-player" controls>
+                        <source src="assets/tree.mp3" type="video/mp4">
+                </video>
+                <video id="hansel-player" controls>
+                        <source src="assets/hansel.mp3" type="video/mp4">
+                </video>
+                <video id="gretel-player" controls>
+                        <source src="assets/gretel.mp3" type="video/mp4">
+                </video>
+                <video id="father-player" controls>
+                        <source src="assets/father.mp3" type="video/mp4">
+                </video>
+                <video id="mother-player" controls>
+                        <source src="assets/stepmother.mp3" type="video/mp4">
+                </video>
             </div>
-            <div class="hidden" id="interaction-house">
-                <img src="assets/house.png" id="house"/>
-            </div>
+
             <div class="hidden" id="interaction-witch">
                 <img src="assets/witch.png" id="witch" style="width:320px;"/>
             </div>
+            <button id="exit" style="display: none;">Exit</button>
         </div>
     </div>
     <script src="assets/jquery.js"></script>
@@ -116,195 +230,130 @@
         var storyPlayer = document.getElementById('story-player');
         var yayPlayer = document.getElementById('yay-player');
 
+        var cookiePlayer = document.getElementById('cookie-player');
+        var treePlayer = document.getElementById('tree-player');
+        var housePlayer = document.getElementById('house-player');
+
+        var hanselPlayer = document.getElementById('hansel-player');
+        var gretelPlayer = document.getElementById('gretel-player');
+        var fatherPlayer = document.getElementById('father-player');
+        var motherPlayer = document.getElementById('mother-player');
+        
+
         $(document).ready(function () {
 
             $('#play-story').click(function () {
                 storyPlayer.currentTime = 10;
                 storyPlayer.play();
 
-                $(this).hide();
+                $('#story').show();
+                $('#intro').hide();
 
-                setTimeout(showHanselAndGretel, 6500);
-                setTimeout(showFatherAndMother, 9500);
-                setTimeout(initFamilySelection, 17500);
+                $('#exit').show();
             });
 
-            function showHanselAndGretel() {
-                $('#family').show();
+            $('#game1').click(function(){           
+                $('#intro').hide();             
+                $('#game1-wrapper').show();
+                $('#exit').show();
 
-                setTimeout(function () {
-                    $('#family .gretel').show();
-                }, 1000);
-            }
+                initFamilySelection();
+            });
 
-            function showFatherAndMother() {
-                $('#family .father').show();
-                setTimeout(function () {
-                    $('#family .mother').show();
-                }, 1000);
-            }
+            $('#game2').click(function(){
+                $('#intro').hide();             
+                $('#interaction-house').show();
+                $('#exit').show();
+
+                initHouseInteraction();
+            });
+
+            $('#exit').click(function(){
+                storyPlayer.pause();
+                $('#story').hide();
+                $('#game1-wrapper').hide();
+                $('#interaction-house').hide();
+                $(this).hide();
+
+                // show menu
+                $('#intro').show();
+            });
 
             function initFamilySelection() {
                 pause();
 
                 $('.family-member').addClass('bounce');
 
-                $('.family-member.bounce').on('click', function(){
-                    $(this).removeClass('bounce').addClass('selected');
-
+                function _readFamilyMembers(e){
+                    
+                    if(e.type === 'click'){
+                        $(this).removeClass('bounce').addClass('selected');
+                    }
                     var clickedImageType = $(this).data('type');
                     var timeout = 0;
                     pause();
                     switch(clickedImageType)
                     {
                         case 'hansel':
-                            storyPlayer.currentTime = 16.3;
-                            timeout = 600;
+                            hanselPlayer.currentTime = 0;
+                            hanselPlayer.play();
                             break;
                         
                         case 'gretel':
-                            storyPlayer.currentTime = 17.2;
-                            timeout = 700;
+                            gretelPlayer.currentTime = 0;
+                            gretelPlayer.play();
                         break;
                             
                         case 'father':
-                            storyPlayer.currentTime = 19;
-                            timeout = 900;
+                            fatherPlayer.currentTime = 0;
+                            fatherPlayer.play();
                             break;
                             
                         case 'mother':
-                            storyPlayer.currentTime = 20.2;
-                            timeout = 1200;
+                            motherPlayer.currentTime = 0;
+                            motherPlayer.play();
                             break;
                     }
 
-                    // play name and then stop
-                    storyPlayer.play();
-                    setTimeout(pause, timeout);
-
-                    var leftMembers = $('.family-member.bounce').length;
-                    if(leftMembers === 0){
-                        // continue story
-                        setTimeout(initStory1, 1500);
+                    if(e.type === 'click'){
+                        var leftMembers = $('.family-member.bounce').length;
+                        if(leftMembers === 0){
+                            playYaySound();
+                        }
                     }
-                });
-            }
-
-            function initStory1(){
-                $('#family').hide();
-                $('#story').show();
-
-                storyPlayer.currentTime = 168;
-                storyPlayer.play();
-
-                // set timeout for interactions page with cookie house
-                setTimeout(initHouseInteraction, 132 * 1000);
+                }
+               
+                $('.family-member.bounce').mouseover(_readFamilyMembers);
+                $('.family-member.bounce').on('click', _readFamilyMembers);
             }
 
             function initHouseInteraction(){
-                $('#story').hide();
-                $('#intro').hide();
-                $('#interaction-house').show();
-
-                pause();
-
                 $('#house').addClass('bounce').on('click', function(){
-                    $(this).removeClass('bounce');
+                    $(this).addClass('selected').removeClass('bounce');
 
-                    // play bravo sound
-                    storyPlayer.currentTime = 275.8;
-                    storyPlayer.play();
+                    housePlayer.currentTime = 0;
+                    housePlayer.play();
 
-                    setTimeout(function(){
-                        pause();
-
-                        // do yay sound         
-                        yayPlayer.currentTime = 0.4;
-                        yayPlayer.play();
-
-                        setTimeout(function(){
-                            pauseYay();
-                            setTimeout(initStory2, 1000);
-                        }, 2000);
-                
-                    }, 600);
+                    setTimeout(playYaySound, housePlayer.duration * 1000);
                 });
-            }
 
-            function initStory2(){
-                $('#interaction-house').hide();
-                $('#story').show();
+                $('#tree').addClass('bounce').on('click', function(){
+                    $(this).addClass('selected').removeClass('bounce');
 
-                storyPlayer.currentTime = 302;
-                storyPlayer.play();
+                    treePlayer.currentTime = 0;
+                    treePlayer.play();
 
-                setTimeout(function(){
-                    pause();
-
-                    storyPlayer.currentTime = 378;
-                    storyPlayer.play();
-
-                    setTimeout(function(){
-                        pause();
-                        initWitchInteraction();
-                    }, 64 * 1000);
-
-                }, 38 * 1000);
-            }
-
-            function initWitchInteraction(){
-                $('#story').hide();
-                $('#witch-bg').show();
-                $('#main-bg').hide();
-                $('#intro').hide();
-                $('#interaction-witch').show();
-
-                $('#witch').addClass('bounce').on('click', function(){
-                    $(this).remove();
-                
-                    storyPlayer.currentTime = 447.9;
-                    storyPlayer.play();
-
-                    // witch yells
-                    $('#story').show();
-                    $('#witch-bg').hide();
-                    $('#main-bg').show();
-
-                    setTimeout(function(){
-                        pause();
-
-                        yayPlayer.currentTime = 0.4;
-                        yayPlayer.play();
-
-                        // yay sounds
-                        setTimeout(function(){
-                            pauseYay();
-                            initStory3();
-                        }, 1500);
-
-                    }, 1200);
+                    setTimeout(playYaySound, treePlayer.duration * 1000);
                 });
-            }
 
-            function initStory3(){
-                storyPlayer.play();
+                $('#cookie').addClass('bounce').on('click', function(){
+                    $(this).addClass('selected').removeClass('bounce');
 
-                setTimeout(function(){
-                    pause();
+                    cookiePlayer.currentTime = 0;
+                    cookiePlayer.play();
 
-                    // end of story
-                    storyPlayer.currentTime = 470;
-                    storyPlayer.play();
-
-                    setTimeout(function(){
-                        pause();
-
-                        setTimeout(function(){
-                            location.reload();
-                        }, 2000);
-
-                    }, 65 * 1000);
-                }, 9000);
+                    setTimeout(playYaySound, cookiePlayer.duration * 1000);
+                });
             }
 
             function pause() {
@@ -313,6 +362,18 @@
 
             function pauseYay(){
                 yayPlayer.pause();
+            }
+
+            function playYaySound(){
+                pause();
+                yayPlayer.pause();
+                yayPlayer.currentTime = 0.4;
+                yayPlayer.play();
+
+                // yay sounds
+                setTimeout(function(){
+                    yayPlayer.pause();
+                }, 2000);
             }
 
         });
